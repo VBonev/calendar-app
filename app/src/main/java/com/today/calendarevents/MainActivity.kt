@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             .query(
                 CalendarContract.Events.CONTENT_URI,
                 arrayOf(
-                    "calendar_id",
+                    "_id",
                     "title",
                     "description",
                     "dtstart",
@@ -70,20 +70,51 @@ class MainActivity : AppCompatActivity() {
         cursor?.let { it ->
             it.moveToFirst()
             for (i in 0 until cursor.count) {
-                val calEvent = CalendarEvent(it.getString(1))
+                val calEvent = CalendarEvent(it.getString(0))
+                calEvent.name = it.getString(1)
                 calEvent.description = it.getString(2)
                 calEvent.startDate = it.getString(3)
                 calEvent.endDate = it.getString(4)
-                calEvent.allDay = it.getString(5)
-                calEvent.busy = it.getString(6)
-                calEvent.calColor = it.getString(7)
+                calEvent.calColor = it.getString(5)
+                calEvent.allDay = it.getInt(6) == 0
+                calEvent.busy = (it.getInt(7) == CalendarContract.Events.AVAILABILITY_BUSY)
                 calEvent.location = it.getString(8)
+                calEvent.attendees = getAllAttendees(calEvent.id)
                 calEvents.add(calEvent)
+
                 it.moveToNext()
 
             }
         }
         return calEvents
+    }
+
+    private fun getAllAttendees(eventId: String): ArrayList<CalendarEvent.EventAttendee> {
+        val cursor = contentResolver
+            .query(
+                CalendarContract.Attendees.CONTENT_URI,
+                arrayOf(
+                    "_id",
+                    "attendeeName",
+                    "attendeeEmail"
+                ),
+                eventId,
+                null,
+                null
+            )
+        val attendees = ArrayList<CalendarEvent.EventAttendee>(cursor.count)
+        cursor?.let { it ->
+            it.moveToFirst()
+            for (i in 0 until cursor.count) {
+                val calEvent = CalendarEvent.EventAttendee(it.getString(0))
+                calEvent.name = it.getString(1)
+                calEvent.email = it.getString(2)
+                attendees.add(calEvent)
+                it.moveToNext()
+
+            }
+        }
+        return attendees
     }
 
     private fun checkPermissions() {

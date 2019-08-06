@@ -1,4 +1,6 @@
 package com.today
 
-class EventsAdapter {
+class EventsAdapter
+
+{
 }
