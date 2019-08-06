@@ -11,7 +11,9 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.today.EventsAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -64,7 +66,7 @@ class MainActivity : AppCompatActivity() {
                 ),
                 null,
                 null,
-                null
+                CalendarContract.Events.DTSTART + " ASC"
             )
         val calEvents = ArrayList<CalendarEvent>(cursor.count)
         cursor?.let { it ->
@@ -140,10 +142,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpList() {
-        val objects = readCalendarEvent()
+        val events = readCalendarEvent()
         val calendars = getAllCalendars()
-        val itemsAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, objects)
-        val calendarEvents: RecyclerView = calendar_events as RecyclerView
+        val eventsAdapter = EventsAdapter(events)
+        eventsAdapter.setItemAction {
+            //if it is OTHER...
+        }
+        calendar_events.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+        calendar_events.adapter = eventsAdapter
 //        calendarEvents.adapter=itemsAdapter
     }
 
