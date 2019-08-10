@@ -1,8 +1,10 @@
 package com.today.calendarevents
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ca.barrenechea.widget.recyclerview.decoration.StickyHeaderAdapter
@@ -11,6 +13,7 @@ import java.util.*
 
 class EventsAdapter(private val events: List<CalendarEvent>, private val headerIndexes: ArrayList<Long>) :
     RecyclerView.Adapter<EventsAdapter.EventViewHolder>(), StickyHeaderAdapter<EventsAdapter.HeaderHolder> {
+
     override fun getHeaderId(position: Int): Long {
         return if (position < headerIndexes.size)
             headerIndexes[position]
@@ -55,12 +58,32 @@ class EventsAdapter(private val events: List<CalendarEvent>, private val headerI
 
         private var title: TextView? = itemView.findViewById(R.id.event_title)
         private var date: TextView? = itemView.findViewById(R.id.event_date)
+        private var calColorView: ImageView? = itemView.findViewById(R.id.calendar_color)
 
         fun bind(event: CalendarEvent) {
             title?.text = event.name
-            date?.text = DateUtils.getDate(event.startDate, "dd/MMM/yy hh:mm")
+            date?.text = if (event.allDay == true) {
+                itemView.context.getString(R.string.all_day_label)
+            } else {
+                itemView.context.resources.getString(
+                    R.string.time_slot_values,
+                    DateUtils.getDate(event.startDate, "hh:mm"),
+                    DateUtils.getDate(event.endDate, "hh:mm")
+                )
+            }
+            calColorView?.setBackgroundColor(getDisplayColor(event.calDisplayColor?.toInt()?:0))
             itemView.setOnClickListener { itemAction?.invoke(event) }
 
+        }
+
+        fun getDisplayColor(color: Int): Int {
+            val fArr = FloatArray(3)
+            Color.colorToHSV(color, fArr)
+            if (fArr[2] > 0.79f) {
+                fArr[1] = Math.min(fArr[1] * 1.3f, 1.0f)
+                fArr[2] = fArr[2] * 0.8f
+            }
+            return Color.HSVToColor(Color.alpha(color), fArr)
         }
     }
 }

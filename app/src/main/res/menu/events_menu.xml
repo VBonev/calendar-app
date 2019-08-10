@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+            android:id="@+id/action_time_slot"
+            android:icon="@android:drawable/ic_dialog_info"
+            android:title="Opa"
+            app:showAsAction="always"/>
+
+</menu>
