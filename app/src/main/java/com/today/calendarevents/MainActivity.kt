@@ -3,7 +3,6 @@ package com.today.calendarevents
 import com.today.calendarevents.base.BaseActivity
 import com.today.calendarevents.databinding.ActivityMainBinding
 
-
 class MainActivity  : BaseActivity<ActivityMainBinding, MainViewModel>(){
 
     override fun getViewModelResId(): Int = BR.mainActivityVM

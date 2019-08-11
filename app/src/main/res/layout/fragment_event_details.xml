@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
+        <import type="android.view.View"/>
         <variable
-                name="eventDetailsFragmentVM"
+                name="eventDetailsVM"
                 type="com.today.calendarevents.details.EventDetailsViewModel"/>
     </data>
 
@@ -19,8 +20,8 @@
                   android:layout_height="60dp"
                   android:textSize="25sp"
                   android:textStyle="bold"
+                  android:text="@{eventDetailsVM.event.name}"
                   android:gravity="center"
-                  android:text="@{eventDetailsFragmentVM.event.name}"
                   android:id="@+id/event_name"/>
 
         <LinearLayout
@@ -37,7 +38,7 @@
                     android:textSize="18sp"
                     android:layout_height="wrap_content"/>
             <TextView
-                    android:text="@{eventDetailsFragmentVM.event.calendarName}"
+                    android:text="@{eventDetailsVM.event.calendarName}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
         </LinearLayout>
@@ -88,6 +89,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/location_layout"
                 android:padding="10dp"
+                android:visibility='@{eventDetailsVM.event.location.equals("") ? View.GONE : View.VISIBLE}'
                 android:orientation="vertical">
             <TextView
                     android:text="@string/location_label"
@@ -97,7 +99,7 @@
                     android:textSize="18sp"
                     android:layout_height="wrap_content"/>
             <TextView
-                    android:text="@{eventDetailsFragmentVM.event.location}"
+                    android:text="@{eventDetailsVM.event.location}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
         </LinearLayout>
@@ -108,6 +110,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/notes_layout"
                 android:padding="10dp"
+                android:visibility='@{eventDetailsVM.event.notes.equals("") ? View.GONE : View.VISIBLE}'
                 android:orientation="vertical">
             <TextView
                     android:text="@string/notes_label"
@@ -118,7 +121,7 @@
                     android:layout_height="wrap_content"/>
             <TextView
                     tools:text="Event name"
-                    android:text="@{eventDetailsFragmentVM.event.notes}"
+                    android:text="@{eventDetailsVM.event.notes}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
         </LinearLayout>

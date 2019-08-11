@@ -11,10 +11,9 @@ import com.today.calendarevents.base.BaseDialogFragment
 import com.today.calendarevents.databinding.FragmentEventDetailsBinding
 import kotlinx.android.synthetic.main.fragment_event_details.*
 
-
 class EventDetailsFragment : BaseDialogFragment<FragmentEventDetailsBinding, EventDetailsViewModel>() {
 
-    override fun getViewModelResId(): Int = BR.eventDetailsFragmentVM
+    override fun getViewModelResId(): Int = BR.eventDetailsVM
 
     override fun getLayoutResId(): Int = R.layout.fragment_event_details
 
@@ -27,13 +26,13 @@ class EventDetailsFragment : BaseDialogFragment<FragmentEventDetailsBinding, Eve
             val event= EventDetailsFragmentArgs.fromBundle(it).event
             viewModel.event.value = event
 
-            start_time.text = Utils.getDate(event.startDate, "hh:mm   dd-MM")
-            end_time.text = Utils.getDate(event.endDate, "hh:mm   dd-MM")
+            start_time.text = Utils.getDate(event.startDate, Utils.DATE_PATTERN)
+            end_time.text = Utils.getDate(event.endDate, Utils.DATE_PATTERN)
 
             if (event.attendees?.isNotEmpty() == true) {
+                binding.eventAttendees.layoutManager = LinearLayoutManager(this@EventDetailsFragment.context)
                 attendees_container.visibility = View.VISIBLE
-                event_attendees.layoutManager = LinearLayoutManager(context)
-                event_attendees.adapter = event.attendees?.let { attendees -> EventAttendeesAdapter(attendees) }
+                binding.eventAttendees.adapter =  EventAttendeesAdapter(event.attendees)
             }
             event_name.setBackgroundColor(Utils.getDisplayColor(event.calDisplayColor))
         }

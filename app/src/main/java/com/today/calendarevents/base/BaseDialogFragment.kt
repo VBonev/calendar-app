@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 
-
 abstract class BaseDialogFragment<B, VM> : DialogFragment()
         where B : ViewDataBinding, VM : ViewModel {
 
@@ -61,5 +60,4 @@ abstract class BaseDialogFragment<B, VM> : DialogFragment()
         else
             ViewModelProviders.of(this, BaseViewModelFactory(creator)).get(T::class.java)
     }
-
 }

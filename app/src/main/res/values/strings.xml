@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ExtraTranslation">
-    <string name="app_name">CalendarEvents</string>
+    <string name="app_name">Agender</string>
     <string name="time_slot_values">%s - %s</string>
     <string name="all_day_label">ALL DAY</string>
     <string name="empty_event_name_error">Please insert event name</string>

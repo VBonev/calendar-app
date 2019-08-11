@@ -7,6 +7,11 @@ import kotlin.math.min
 
 object Utils {
 
+    const val DAY_PATTERN="dd  MMM"
+    const val HOURS_PATTERN="hh:mm"
+    const val DAY_HOURS_PATTERN="HH:mm"
+    const val DATE_PATTERN="hh:mm  dd-MM"
+
     fun getDate(milliSeconds: Long?, pattern: String): String {
         val formatter = SimpleDateFormat(pattern, Locale.getDefault())
         val calendar = Calendar.getInstance()

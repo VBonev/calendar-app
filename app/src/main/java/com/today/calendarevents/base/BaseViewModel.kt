@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 
-open class BaseViewModel(app: Application) : AndroidViewModel(app) {
+abstract class BaseViewModel(app: Application) : AndroidViewModel(app) {
 
     protected val contentResolver: ContentResolver by lazy { app.contentResolver }
     protected val compositeDisposable = CompositeDisposable()

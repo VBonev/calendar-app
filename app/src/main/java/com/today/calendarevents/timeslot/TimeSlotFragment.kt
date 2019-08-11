@@ -15,11 +15,9 @@ import com.today.calendarevents.databinding.FragmentTimeSlotBinding
 import kotlinx.android.synthetic.main.fragment_time_slot.*
 import java.util.*
 
-
 class TimeSlotFragment : BaseDialogFragment<FragmentTimeSlotBinding, TimeSlotViewModel>() {
 
-
-    override fun getViewModelResId(): Int = BR.agendaFragmentVM
+    override fun getViewModelResId(): Int = BR.timeSlotVM
 
     override fun getLayoutResId(): Int = R.layout.fragment_time_slot
 
@@ -51,9 +49,11 @@ class TimeSlotFragment : BaseDialogFragment<FragmentTimeSlotBinding, TimeSlotVie
         val events: List<CalendarEvent>? = arguments?.getParcelableArrayList(EVENTS_KEY)
         viewModel.inserted.observe(viewLifecycleOwner, Observer { insertedEvent(it) })
 
+        // Filter only events with an availability of Busy that are considered as time slots that you arent available for
         val busyEvents = events?.filter {
             it.busy == true
         }
+
         busyEvents?.let {
 
             startTimeSlot = getFirstTimeSlot(it)
@@ -80,7 +80,7 @@ class TimeSlotFragment : BaseDialogFragment<FragmentTimeSlotBinding, TimeSlotVie
                 override fun onNothingSelected(parent: AdapterView<*>) {}
             }
 
-            current_time.text = Utils.getCurrentTime("HH:mm")
+            current_time.text = Utils.getCurrentTime(Utils.DAY_HOURS_PATTERN)
             setTimeSlotLabel(startTimeSlot, startTimeSlot + currentInterval)
 
             ok_button.setOnClickListener {
@@ -105,11 +105,15 @@ class TimeSlotFragment : BaseDialogFragment<FragmentTimeSlotBinding, TimeSlotVie
     private fun setTimeSlotLabel(startTime: Long, endTime: Long) {
         time_slot_label.text = context?.getString(
             R.string.time_slot_values,
-            Utils.getDate(startTime, "HH:mm"),
-            Utils.getDate(endTime, "HH:mm")
+            Utils.getDate(startTime, Utils.HOURS_PATTERN),
+            Utils.getDate(endTime, Utils.HOURS_PATTERN)
         )
     }
 
+    /**
+     With this method we round the time to the next hour or half an hour.
+     Example if current time is 5:33 we round it to 6:00, if it is 5:27 we round it to 5:30
+     */
     private fun getRoundedTime(): Calendar {
         val cal = Calendar.getInstance()
         val ratio = cal.get(Calendar.MINUTE).toDouble().div(TOTAL_MINUTES_VALUE)
@@ -122,6 +126,11 @@ class TimeSlotFragment : BaseDialogFragment<FragmentTimeSlotBinding, TimeSlotVie
         return cal
     }
 
+    /**
+     * We use this method to find the first empty time slot. We get the first {@link #getRoundedTime()} to get first free slot.
+     * We loop through busy events starting time to check if any event starts in our time slot interval, if so, we increment the time slot.
+     * @return latest found free time slot
+     */
     private fun getFirstTimeSlot(events: List<CalendarEvent>): Long {
         var timeSlotStart = getRoundedTime().timeInMillis
         var timeSlotEnd = timeSlotStart + currentInterval

@@ -21,9 +21,7 @@ import com.today.calendarevents.details.EventDetailsFragment
 import com.today.calendarevents.timeslot.TimeSlotFragment
 import kotlinx.android.synthetic.main.fragment_agenda.*
 
-
 class AgendaFragment : BaseFragment<FragmentAgendaBinding, AgendaViewModel>() {
-
 
     companion object COMPANION {
         const val MODIFY_CALENDAR_PERMISSIONS_REQUEST = 2
@@ -31,7 +29,7 @@ class AgendaFragment : BaseFragment<FragmentAgendaBinding, AgendaViewModel>() {
 
     private var stickyHeaderDecorator: StickyHeaderDecoration? = null
 
-    override fun getViewModelResId(): Int = BR.agendaFragmentVM
+    override fun getViewModelResId(): Int = BR.agendaVM
 
     override fun getLayoutResId(): Int = R.layout.fragment_agenda
 
@@ -103,10 +101,6 @@ class AgendaFragment : BaseFragment<FragmentAgendaBinding, AgendaViewModel>() {
             val headerIndexes = viewModel.getHeaderIndexes(events)
             val eventsAdapter = AgendaAdapter(events, headerIndexes)
 
-//            eventsAdapter.setItemAction {
-//                val editNameDialogFragment = EventDetailsFragment.newInstance(it)
-//                editNameDialogFragment.show(activity?.supportFragmentManager, "event_details")
-//            }
             calendar_events.layoutManager = LinearLayoutManager(context)
             if (stickyHeaderDecorator != null) {
                 calendar_events.removeItemDecoration(stickyHeaderDecorator!!)

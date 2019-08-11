@@ -11,14 +11,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 
-abstract class BaseActivity<B, VM> : AppCompatActivity(), IActivity<VM> where B : ViewDataBinding, VM : ViewModel {
-
+abstract class BaseActivity<B, VM> : AppCompatActivity() where B : ViewDataBinding, VM : ViewModel {
 
     private val viewModel: VM by lazy { ViewModelProviders.of(this).get(getViewModelClass()) }
 
-
     private lateinit var binding: B
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,5 +58,4 @@ class BaseViewModelFactory<T>(val creator: () -> T) : ViewModelProvider.Factory 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return creator() as T
     }
-
 }

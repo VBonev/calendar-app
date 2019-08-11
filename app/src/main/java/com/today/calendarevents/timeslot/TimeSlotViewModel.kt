@@ -48,6 +48,5 @@ class TimeSlotViewModel(app: Application) : BaseViewModel(app) {
                     inserted.postValue(false)
                 }
             )
-
     }
 }

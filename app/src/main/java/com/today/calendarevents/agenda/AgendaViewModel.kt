@@ -18,11 +18,9 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 
-
 class AgendaViewModel(app: Application) : BaseViewModel(app) {
 
     val calendarEvents: MutableLiveData<ArrayList<CalendarEvent>> = MutableLiveData()
-
 
     fun getCalendarEvents() {
         isLoading.postValue(true)

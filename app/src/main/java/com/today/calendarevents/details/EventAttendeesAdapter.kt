@@ -6,37 +6,31 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.today.calendarevents.R
 import com.today.calendarevents.data.EventAttendee
+import com.today.calendarevents.databinding.ItemAttendeeBinding
 
-class EventAttendeesAdapter(private val attendees: List<EventAttendee>) :
+class EventAttendeesAdapter(private val attendees: List<EventAttendee>?) :
     RecyclerView.Adapter<EventAttendeesAdapter.AttendeeViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AttendeeViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return AttendeeViewHolder(inflater, parent)
+        val binding = ItemAttendeeBinding.inflate(inflater, parent, false)
+        return AttendeeViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: AttendeeViewHolder, position: Int) {
-        val countryName: EventAttendee = attendees[position]
-        holder.bind(countryName)
+        holder.bind(attendees?.get(position))
     }
 
-    override fun getItemCount(): Int = attendees.size
+    override fun getItemCount(): Int = attendees?.size ?: 0
 
-
-    inner class AttendeeViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
-        RecyclerView.ViewHolder(inflater.inflate(R.layout.attendee_list_item, parent, false)) {
-
-        private var title: TextView? = itemView.findViewById(R.id.attendee_name)
-        private var mail: TextView? = itemView.findViewById(R.id.attendee_mail)
-
-        fun bind(attendee: EventAttendee) {
-            title?.text = if (attendee.name.isNullOrBlank()) {
+    inner class AttendeeViewHolder(private val binding: ItemAttendeeBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(attendee: EventAttendee?) {
+            binding.attendeeName.text = if (attendee?.name?.isEmpty() == true) {
                 attendee.email
             } else {
-                attendee.name
+                attendee?.name
             }
-            mail?.text = itemView.context.resources.getString(attendee.status)
-
+            binding.attendeeStatus.text = attendee?.status?.let { itemView.context.resources.getString(it) }
         }
     }
 }
