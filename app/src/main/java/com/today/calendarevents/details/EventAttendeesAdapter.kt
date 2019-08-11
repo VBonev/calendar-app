@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.today.calendarevents.data.EventAttendee
 import com.today.calendarevents.R
+import com.today.calendarevents.data.EventAttendee
 
 class EventAttendeesAdapter(private val attendees: List<EventAttendee>) :
     RecyclerView.Adapter<EventAttendeesAdapter.AttendeeViewHolder>() {
@@ -35,12 +35,7 @@ class EventAttendeesAdapter(private val attendees: List<EventAttendee>) :
             } else {
                 attendee.name
             }
-            mail?.text =   when (attendee.status) {
-                1 -> "ACCEPTED"
-                2 -> "DECLINED"
-                3 -> "INVITED"
-                else -> "NONE"
-            }
+            mail?.text = itemView.context.resources.getString(attendee.status)
 
         }
     }

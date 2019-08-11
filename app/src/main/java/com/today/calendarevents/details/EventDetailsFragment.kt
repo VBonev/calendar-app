@@ -15,7 +15,8 @@ import kotlinx.android.synthetic.main.fragment_event_details.*
 class EventDetailsFragment : DialogFragment() {
 
     companion object {
-       private const val EVENT_KEY = "event"
+        private const val EVENT_KEY = "event"
+
         fun newInstance(eventDetails: CalendarEvent): EventDetailsFragment {
             val frag = EventDetailsFragment()
             val args = Bundle()
@@ -25,14 +26,20 @@ class EventDetailsFragment : DialogFragment() {
         }
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_event_details, container)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val eventDetails: CalendarEvent? = arguments?.getParcelable(EVENT_KEY)
 
         eventDetails?.let {
             event_name.text = it.name
+            calendar_name.text = it.calendarName
             start_time.text = Utils.getDate(it.startDate, "hh:mm   dd-MM")
             end_time.text = Utils.getDate(it.endDate, "hh:mm   dd-MM")
+
             if (it.location?.isNotEmpty() == true) {
                 location.text = it.location
             } else {
@@ -44,7 +51,7 @@ class EventDetailsFragment : DialogFragment() {
             } else {
                 notes_layout.visibility = View.GONE
             }
-            calendar_name.text = it.calendarName
+
             if (it.attendees?.isNotEmpty() == true) {
                 attendees_container.visibility = View.VISIBLE
                 event_attendees.layoutManager = LinearLayoutManager(context)
@@ -52,10 +59,6 @@ class EventDetailsFragment : DialogFragment() {
             }
             event_name.setBackgroundColor(Utils.getDisplayColor(it.calDisplayColor))
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_event_details, container)
     }
 
 }

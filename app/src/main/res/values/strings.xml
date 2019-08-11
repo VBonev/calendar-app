@@ -17,4 +17,9 @@
     <string name="end_date_label">End Date:</string>
     <string name="start_date_label">Start date:</string>
     <string name="calendar_label">Calendar:</string>
+
+    <string name="attendee_status_invited">INVITED</string>
+    <string name="attendee_status_accepted">ACCEPTED</string>
+    <string name="attendee_status_declined">DECLINED</string>
+    <string name="attendee_status_none">NONE</string>
 </resources>
