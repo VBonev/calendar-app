@@ -1,4 +1,4 @@
-package com.today.calendarevents.baseview
+package com.today.calendarevents.base
 
 import androidx.lifecycle.ViewModel
 

@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import ca.barrenechea.widget.recyclerview.decoration.StickyHeaderAdapter
 import ca.barrenechea.widget.recyclerview.decoration.StickyHeaderDecoration
@@ -33,11 +34,11 @@ class AgendaAdapter(private val events: List<CalendarEvent>, private val headerI
         headerHolder.date.text = Utils.getDate(item.startDate, "dd  MMM")
     }
 
-    private var itemAction: ((CalendarEvent) -> Unit)? = null
-
-    fun setItemAction(action: (CalendarEvent) -> Unit) {
-        this.itemAction = action
-    }
+//    private var itemAction: ((CalendarEvent) -> Unit)? = null
+//
+//    fun setItemAction(action: (CalendarEvent) -> Unit) {
+//        this.itemAction = action
+//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -74,7 +75,13 @@ class AgendaAdapter(private val events: List<CalendarEvent>, private val headerI
                 )
             }
             calColorView?.setBackgroundColor(Utils.getDisplayColor(event.calDisplayColor))
-            itemView.setOnClickListener { itemAction?.invoke(event) }
+            itemView.setOnClickListener {
+//                itemAction?.invoke(event)
+                event.let { movie ->
+                    val navigationDirection = AgendaFragmentDirections.actionHomeToDetails(movie)
+                    Navigation.findNavController(it).navigate(navigationDirection)
+                }
+            }
 
         }
 

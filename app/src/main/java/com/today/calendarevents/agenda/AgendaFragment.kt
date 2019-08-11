@@ -10,10 +10,11 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.Observer
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import ca.barrenechea.widget.recyclerview.decoration.StickyHeaderDecoration
 import com.today.calendarevents.R
-import com.today.calendarevents.baseview.BaseFragment
+import com.today.calendarevents.base.BaseFragment
 import com.today.calendarevents.data.CalendarEvent
 import com.today.calendarevents.databinding.FragmentAgendaBinding
 import com.today.calendarevents.details.EventDetailsFragment
@@ -22,8 +23,13 @@ import kotlinx.android.synthetic.main.fragment_agenda.*
 
 
 class AgendaFragment : BaseFragment<FragmentAgendaBinding, AgendaViewModel>() {
+
+
+    companion object COMPANION {
+        const val MODIFY_CALENDAR_PERMISSIONS_REQUEST = 2
+    }
+
     private var stickyHeaderDecorator: StickyHeaderDecoration? = null
-//    private val viewModel by lazy { AgendaViewModel(activity.contentResolver) }
 
     override fun getViewModelResId(): Int = BR.agendaFragmentVM
 
@@ -47,24 +53,20 @@ class AgendaFragment : BaseFragment<FragmentAgendaBinding, AgendaViewModel>() {
         R.id.action_time_slot -> {
 
             val timeSlotFragment =
-                TimeSlotFragment.newInstance(viewModel.calendarEvents.value as ArrayList<CalendarEvent>?)
+                TimeSlotFragment.newInstance(viewModel.calendarEvents.value)
             timeSlotFragment.onInsertListener = object :
                 TimeSlotFragment.OnInsertEventListener {
                 override fun onInsert() {
                     setUpList()
                 }
             }
-            timeSlotFragment.show(activity?.supportFragmentManager, "time_slot")
+            activity?.supportFragmentManager?.let { timeSlotFragment.show(it, "time_slot") }
             true
         }
 
         else -> {
             super.onOptionsItemSelected(item)
         }
-    }
-
-    companion object COMPANION {
-        const val MODIFY_CALENDAR_PERMISSIONS_REQUEST = 2
     }
 
     private fun checkPermissions() {
@@ -101,10 +103,10 @@ class AgendaFragment : BaseFragment<FragmentAgendaBinding, AgendaViewModel>() {
             val headerIndexes = viewModel.getHeaderIndexes(events)
             val eventsAdapter = AgendaAdapter(events, headerIndexes)
 
-            eventsAdapter.setItemAction {
-                val editNameDialogFragment = EventDetailsFragment.newInstance(it)
-                editNameDialogFragment.show(activity?.supportFragmentManager, "event_details")
-            }
+//            eventsAdapter.setItemAction {
+//                val editNameDialogFragment = EventDetailsFragment.newInstance(it)
+//                editNameDialogFragment.show(activity?.supportFragmentManager, "event_details")
+//            }
             calendar_events.layoutManager = LinearLayoutManager(context)
             if (stickyHeaderDecorator != null) {
                 calendar_events.removeItemDecoration(stickyHeaderDecorator!!)

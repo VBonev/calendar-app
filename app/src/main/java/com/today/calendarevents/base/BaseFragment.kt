@@ -1,4 +1,4 @@
-package com.today.calendarevents.baseview
+package com.today.calendarevents.base
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,7 +18,8 @@ abstract class BaseFragment<B, VM> : Fragment()
     /**
      * The view model object for the fragment.
      */
-    protected val viewModel: VM by lazy { ViewModelProviders.of(this).get(getViewModelClass()) }
+    protected val viewModel: VM by lazy {
+        ViewModelProviders.of(this).get(getViewModelClass()) }
 
     /**
      * The binding object of the fragment. This can be used for accessing views.

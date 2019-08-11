@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ExtraTranslation">
     <string name="app_name">CalendarEvents</string>
     <string name="time_slot_values">%s - %s</string>
     <string name="all_day_label">ALL DAY</string>

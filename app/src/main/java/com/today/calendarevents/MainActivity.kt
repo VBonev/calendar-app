@@ -1,6 +1,6 @@
 package com.today.calendarevents
 
-import com.today.calendarevents.baseview.BaseActivity
+import com.today.calendarevents.base.BaseActivity
 import com.today.calendarevents.databinding.ActivityMainBinding
 
 

@@ -1,11 +1,11 @@
 package com.today.calendarevents.timeslot
 
-import android.content.ContentResolver
+import android.app.Application
 import android.content.ContentValues
 import android.provider.CalendarContract
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.today.calendarevents.BaseViewModel
+import com.today.calendarevents.base.BaseViewModel
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
@@ -13,7 +13,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 
-class TimeSlotViewModel(contentResolver: ContentResolver) : BaseViewModel(contentResolver) {
+class TimeSlotViewModel(app: Application) : BaseViewModel(app) {
     val inserted: MutableLiveData<Boolean> = MutableLiveData()
 
     fun insertEvent(

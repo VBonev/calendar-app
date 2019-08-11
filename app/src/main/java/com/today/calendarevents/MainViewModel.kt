@@ -1,5 +1,6 @@
 package com.today.calendarevents
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import com.today.calendarevents.base.BaseViewModel
 
-class MainViewModel : ViewModel()
+class MainViewModel(app:Application) : BaseViewModel(app)

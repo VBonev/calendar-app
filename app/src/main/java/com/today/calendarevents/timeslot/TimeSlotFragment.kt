@@ -1,24 +1,30 @@
 package com.today.calendarevents.timeslot
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.fragment.app.DialogFragment
-import kotlinx.android.synthetic.main.fragment_time_slot.*
-import java.util.*
+import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.Observer
-import com.today.calendarevents.data.CalendarEvent
 import com.today.calendarevents.R
 import com.today.calendarevents.Utils
+import com.today.calendarevents.base.BaseDialogFragment
+import com.today.calendarevents.data.CalendarEvent
+import com.today.calendarevents.databinding.FragmentTimeSlotBinding
+import kotlinx.android.synthetic.main.fragment_time_slot.*
+import java.util.*
 
 
-class TimeSlotFragment : DialogFragment() {
+class TimeSlotFragment : BaseDialogFragment<FragmentTimeSlotBinding, TimeSlotViewModel>() {
 
-    private val viewModel by lazy { activity?.let { TimeSlotViewModel(it.contentResolver) } }
+
+    override fun getViewModelResId(): Int = BR.agendaFragmentVM
+
+    override fun getLayoutResId(): Int = R.layout.fragment_time_slot
+
+    override fun getViewModelClass(): Class<TimeSlotViewModel> = TimeSlotViewModel::class.java
+
     var currentInterval: Int = HALF_HOUR_INTERVAL
     var startTimeSlot: Long = 0
     var onInsertListener: OnInsertEventListener? = null
@@ -40,14 +46,10 @@ class TimeSlotFragment : DialogFragment() {
         private const val EVENTS_KEY = "events"
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_time_slot, container)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val events: List<CalendarEvent>? = arguments?.getParcelableArrayList(EVENTS_KEY)
-        viewModel?.inserted?.observe(viewLifecycleOwner, Observer { insertedEvent(it) })
+        viewModel.inserted.observe(viewLifecycleOwner, Observer { insertedEvent(it) })
 
         val busyEvents = events?.filter {
             it.busy == true
@@ -83,7 +85,7 @@ class TimeSlotFragment : DialogFragment() {
 
             ok_button.setOnClickListener {
                 if (slot_name.text.isNotEmpty()) {
-                    viewModel?.insertEvent(
+                    viewModel.insertEvent(
                         slot_name.text.toString(),
                         slot_notes.text.toString(),
                         startTimeSlot,

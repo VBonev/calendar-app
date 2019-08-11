@@ -1,12 +1,11 @@
 package com.today.calendarevents.agenda
 
 import android.app.Application
-import android.content.ContentResolver
 import android.provider.CalendarContract
 import android.util.Log
 import android.util.SparseArray
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import com.today.calendarevents.base.BaseViewModel
 import com.today.calendarevents.Utils
 import com.today.calendarevents.data.CalendarEvent
 import com.today.calendarevents.data.EventAttendee
@@ -14,23 +13,15 @@ import io.reactivex.Single
 import io.reactivex.SingleOnSubscribe
 import io.reactivex.SingleSource
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 
 
-class AgendaViewModel : ViewModel() {
-    private val compositeDisposable = CompositeDisposable()
-    val isLoading: MutableLiveData<Boolean> = MutableLiveData()
-    private val contentResolver: ContentResolver by lazy { Application().applicationContext.contentResolver }
-    override fun onCleared() {
-        compositeDisposable.clear()
-        super.onCleared()
-    }
+class AgendaViewModel(app: Application) : BaseViewModel(app) {
 
-    val calendarEvents: MutableLiveData<List<CalendarEvent>> = MutableLiveData()
+    val calendarEvents: MutableLiveData<ArrayList<CalendarEvent>> = MutableLiveData()
 
 
     fun getCalendarEvents() {
@@ -61,7 +52,7 @@ class AgendaViewModel : ViewModel() {
 
     private fun readCalendars(): SingleSource<SparseArray<String>> {
         return Single.create { emitter ->
-            val cursor = contentResolver?.query(
+            val cursor = contentResolver.query(
                 CalendarContract.Calendars.CONTENT_URI,
                 arrayOf(
                     CalendarContract.Calendars._ID,
@@ -84,7 +75,7 @@ class AgendaViewModel : ViewModel() {
     private fun readEvents(): SingleSource<ArrayList<CalendarEvent>> {
         return Single.create { emitter ->
             try {
-                val cursor = contentResolver?.query(
+                val cursor = contentResolver.query(
                     CalendarContract.Events.CONTENT_URI,
                     arrayOf(
                         CalendarContract.Events._ID,
@@ -132,7 +123,7 @@ class AgendaViewModel : ViewModel() {
 
         compositeDisposable += Single.create(SingleOnSubscribe<List<EventAttendee>> { emitter ->
             try {
-                val cursor = contentResolver?.query(
+                val cursor = contentResolver.query(
                     CalendarContract.Attendees.CONTENT_URI,
                     arrayOf(
                         CalendarContract.Attendees._ID,

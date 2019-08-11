@@ -9,13 +9,15 @@
               android:name="com.today.calendarevents.agenda.AgendaFragment"
               android:label="HomeFragment"
               tools:layout="@layout/fragment_agenda">
-        <action android:id="@+id/action_homeFragment_to_placeholder"
+        <action android:id="@+id/action_home_to_details"
                 app:destination="@id/detailsFragment"/>
+
     </fragment>
-    <fragment android:id="@+id/detailsFragment"
-              android:label="MovieDetailsFragment"
-              android:name="com.today.calendarevents.details.EventDetailsFragment">
+    <dialog android:id="@+id/detailsFragment"
+            android:label="EventDetailsFragment"
+            android:name="com.today.calendarevents.details.EventDetailsFragment">
         <argument android:name="event"
                   app:argType="com.today.calendarevents.data.CalendarEvent"/>
-    </fragment>
+    </dialog>
+
 </navigation>
