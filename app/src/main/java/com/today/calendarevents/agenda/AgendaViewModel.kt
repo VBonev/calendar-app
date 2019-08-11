@@ -5,27 +5,32 @@ import android.provider.CalendarContract
 import android.util.Log
 import android.util.SparseArray
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.today.calendarevents.BaseViewModel
+import com.today.calendarevents.Utils
 import com.today.calendarevents.data.CalendarEvent
 import com.today.calendarevents.data.EventAttendee
-import com.today.calendarevents.Utils
-import io.reactivex.*
+import io.reactivex.Single
+import io.reactivex.SingleOnSubscribe
+import io.reactivex.SingleSource
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import java.lang.Exception
 
 
-class AgendaViewModel(contentResolver: ContentResolver) : BaseViewModel(contentResolver) {
-
+class AgendaViewModel : ViewModel() {
+    private val compositeDisposable = CompositeDisposable()
+    val isLoading: MutableLiveData<Boolean> = MutableLiveData()
+    val contentResolver:ContentResolver?=null
+    override fun onCleared() {
+        compositeDisposable.clear()
+        super.onCleared()
+    }
     val calendarEvents: MutableLiveData<List<CalendarEvent>> = MutableLiveData()
 
-    override fun onCleared() {
-        super.onCleared()
-        compositeDisposable.dispose()
-    }
 
     fun getCalendarEvents() {
         isLoading.postValue(true)
@@ -54,7 +59,7 @@ class AgendaViewModel(contentResolver: ContentResolver) : BaseViewModel(contentR
 
     private fun readCalendars(): SingleSource<SparseArray<String>> {
         return Single.create { emitter ->
-            val cursor = contentResolver.query(
+            val cursor = contentResolver?.query(
                 CalendarContract.Calendars.CONTENT_URI,
                 arrayOf(
                     CalendarContract.Calendars._ID,
@@ -77,25 +82,24 @@ class AgendaViewModel(contentResolver: ContentResolver) : BaseViewModel(contentR
     private fun readEvents(): SingleSource<ArrayList<CalendarEvent>> {
         return Single.create { emitter ->
             try {
-                val cursor = contentResolver
-                    .query(
-                        CalendarContract.Events.CONTENT_URI,
-                        arrayOf(
-                            CalendarContract.Events._ID,
-                            CalendarContract.Events.TITLE,
-                            CalendarContract.Events.DESCRIPTION,
-                            CalendarContract.Events.DTSTART,
-                            CalendarContract.Events.DTEND,
-                            CalendarContract.Events.CALENDAR_COLOR,
-                            CalendarContract.Events.ALL_DAY,
-                            CalendarContract.Events.AVAILABILITY,
-                            CalendarContract.Events.EVENT_LOCATION,
-                            CalendarContract.Events.CALENDAR_ID
-                        ),
-                        null,
-                        null,
-                        CalendarContract.Events.DTSTART + " ASC"
-                    )
+                val cursor = contentResolver?.query(
+                    CalendarContract.Events.CONTENT_URI,
+                    arrayOf(
+                        CalendarContract.Events._ID,
+                        CalendarContract.Events.TITLE,
+                        CalendarContract.Events.DESCRIPTION,
+                        CalendarContract.Events.DTSTART,
+                        CalendarContract.Events.DTEND,
+                        CalendarContract.Events.CALENDAR_COLOR,
+                        CalendarContract.Events.ALL_DAY,
+                        CalendarContract.Events.AVAILABILITY,
+                        CalendarContract.Events.EVENT_LOCATION,
+                        CalendarContract.Events.CALENDAR_ID
+                    ),
+                    null,
+                    null,
+                    CalendarContract.Events.DTSTART + " ASC"
+                )
                 val calEvents = ArrayList<CalendarEvent>()
                 cursor?.let { cursor ->
                     if (cursor.count > 0) {
@@ -126,19 +130,18 @@ class AgendaViewModel(contentResolver: ContentResolver) : BaseViewModel(contentR
 
         compositeDisposable += Single.create(SingleOnSubscribe<List<EventAttendee>> { emitter ->
             try {
-                val cursor = contentResolver
-                    .query(
-                        CalendarContract.Attendees.CONTENT_URI,
-                        arrayOf(
-                            CalendarContract.Attendees._ID,
-                            CalendarContract.Attendees.ATTENDEE_NAME,
-                            CalendarContract.Attendees.ATTENDEE_EMAIL,
-                            CalendarContract.Attendees.STATUS
-                        ),
-                        CalendarContract.Attendees.EVENT_ID + "=" + event.id,
-                        null,
-                        null
-                    )
+                val cursor = contentResolver?.query(
+                    CalendarContract.Attendees.CONTENT_URI,
+                    arrayOf(
+                        CalendarContract.Attendees._ID,
+                        CalendarContract.Attendees.ATTENDEE_NAME,
+                        CalendarContract.Attendees.ATTENDEE_EMAIL,
+                        CalendarContract.Attendees.STATUS
+                    ),
+                    CalendarContract.Attendees.EVENT_ID + "=" + event.id,
+                    null,
+                    null
+                )
                 val attendees = ArrayList<EventAttendee>()
                 cursor?.let { it ->
                     while (it.moveToNext()) {
