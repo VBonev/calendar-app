@@ -1,61 +1,68 @@
-package com.today.calendarevents
+package com.today.calendarevents.timeslot
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import kotlinx.android.synthetic.main.fragment_time_slot.*
 import java.util.*
-import android.content.ContentValues
-import android.provider.CalendarContract
-import android.widget.Toast
-import android.widget.ArrayAdapter
-import android.widget.AdapterView
+import androidx.lifecycle.Observer
+import com.today.calendarevents.data.CalendarEvent
+import com.today.calendarevents.R
+import com.today.calendarevents.Utils
 
 
 class TimeSlotFragment : DialogFragment() {
+
+    private val viewModel by lazy { activity?.let { TimeSlotViewModel(it.contentResolver) } }
     var currentInterval: Int = HALF_HOUR_INTERVAL
-
-    interface OnInsertEventListener {
-        fun onInsert()
-    }
-
+    var startTimeSlot: Long = 0
     var onInsertListener: OnInsertEventListener? = null
 
     companion object {
         fun newInstance(events: ArrayList<CalendarEvent>?): TimeSlotFragment {
             val frag = TimeSlotFragment()
             val args = Bundle()
-            args.putParcelableArrayList("events", events)
+            args.putParcelableArrayList(EVENTS_KEY, events)
             frag.arguments = args
             return frag
         }
 
-        const val ONE_MINUTE_INTERVAL = 60 * 1000
-        const val HALF_HOUR_INTERVAL = 30 * ONE_MINUTE_INTERVAL
-        const val ONE_HOUR_INTERVAL = 2 * HALF_HOUR_INTERVAL
-        const val TOTAL_MINUTES_VALUE = 60.0
-        const val MIDDLE_RATIO = 0.5
+        private const val ONE_MINUTE_INTERVAL = 60 * 1000
+        private const val HALF_HOUR_INTERVAL = 30 * ONE_MINUTE_INTERVAL
+        private const val ONE_HOUR_INTERVAL = 60 * ONE_MINUTE_INTERVAL
+        private const val TOTAL_MINUTES_VALUE = 60.0
+        private const val MIDDLE_RATIO = 0.5
+        private const val EVENTS_KEY = "events"
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_time_slot, container)
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val events: List<CalendarEvent>? = arguments?.getParcelableArrayList("events")
+        val events: List<CalendarEvent>? = arguments?.getParcelableArrayList(EVENTS_KEY)
+        viewModel?.inserted?.observe(viewLifecycleOwner, Observer { insertedEvent(it) })
+
         val busyEvents = events?.filter {
             it.busy == true
         }
         busyEvents?.let {
-            val startTimeSlot = getFirstTimeSlot(it)
-            val endTimeSlot = startTimeSlot + currentInterval
 
-            val intervals: Array<String> = arrayOf("30 minutes", "1 Hour")
-            val adapter = ArrayAdapter(context, R.layout.support_simple_spinner_dropdown_item, intervals)
+            startTimeSlot = getFirstTimeSlot(it)
+            val intervals: Array<String> = arrayOf(
+                context?.resources?.getString(R.string.half_an_hour_time_slot)!!,
+                context?.resources?.getString(R.string.one_hour_time_slot)!!
+            )
+            val adapter = ArrayAdapter(
+                context,
+                R.layout.support_simple_spinner_dropdown_item, intervals
+            )
             adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
             time_interval_spinner.adapter = adapter
             time_interval_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -65,26 +72,29 @@ class TimeSlotFragment : DialogFragment() {
                     } else {
                         ONE_HOUR_INTERVAL
                     }
-                    setTimeSlotLabel(startTimeSlot, endTimeSlot)
+                    setTimeSlotLabel(startTimeSlot, startTimeSlot + currentInterval)
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {}
             }
 
-            setTimeSlotLabel(startTimeSlot, endTimeSlot)
+            current_time.text = Utils.getCurrentTime("HH:mm")
+            setTimeSlotLabel(startTimeSlot, startTimeSlot + currentInterval)
 
             ok_button.setOnClickListener {
                 if (slot_name.text.isNotEmpty()) {
-                    insertEvent(
-                        startTimeSlot,
-                        endTimeSlot,
+                    viewModel?.insertEvent(
                         slot_name.text.toString(),
-                        slot_notes.text.toString()
+                        slot_notes.text.toString(),
+                        startTimeSlot,
+                        startTimeSlot + currentInterval
                     )
-                    onInsertListener?.onInsert()
-                    dismiss()
                 } else {
-                    Toast.makeText(context, "Enter event title", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        context?.resources?.getString(R.string.empty_event_name_error),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
@@ -93,31 +103,14 @@ class TimeSlotFragment : DialogFragment() {
     private fun setTimeSlotLabel(startTime: Long, endTime: Long) {
         time_slot_label.text = context?.getString(
             R.string.time_slot_values,
-            DateUtils.getDate(startTime, "HH:mm"),
-            DateUtils.getDate(endTime + currentInterval, "HH:mm")
+            Utils.getDate(startTime, "HH:mm"),
+            Utils.getDate(endTime, "HH:mm")
         )
-    }
-
-    private fun insertEvent(startTime: Long, endTime: Long, title: String, note: String = "") {
-
-        val timeSlotEvent = ContentValues()
-        timeSlotEvent.put(CalendarContract.Events.CALENDAR_ID, 4)
-        timeSlotEvent.put(CalendarContract.Events.TITLE, title)
-        timeSlotEvent.put(CalendarContract.Events.DESCRIPTION, note)
-        timeSlotEvent.put(CalendarContract.Events.EVENT_LOCATION, "Sofia")
-        timeSlotEvent.put(CalendarContract.Events.DTSTART, startTime)
-        timeSlotEvent.put(CalendarContract.Events.DTEND, endTime)
-        timeSlotEvent.put(CalendarContract.Events.ALL_DAY, 0)
-        timeSlotEvent.put(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY)
-        timeSlotEvent.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().displayName)
-        activity?.contentResolver?.insert(CalendarContract.Events.CONTENT_URI, timeSlotEvent)
     }
 
     private fun getRoundedTime(): Calendar {
         val cal = Calendar.getInstance()
-
         val ratio = cal.get(Calendar.MINUTE).toDouble().div(TOTAL_MINUTES_VALUE)
-
         if (ratio > MIDDLE_RATIO) {
             cal.set(Calendar.HOUR, cal.get(Calendar.HOUR) + 1)
             cal.set(Calendar.MINUTE, 0)
@@ -139,5 +132,19 @@ class TimeSlotFragment : DialogFragment() {
             }
         }
         return timeSlotStart
+    }
+
+    private fun insertedEvent(success: Boolean) {
+        if (success) {
+            onInsertListener?.onInsert()
+        } else {
+            Toast.makeText(context, context?.resources?.getString(R.string.insert_event_error), Toast.LENGTH_LONG)
+                .show()
+        }
+        dismiss()
+    }
+
+    interface OnInsertEventListener {
+        fun onInsert()
     }
 }

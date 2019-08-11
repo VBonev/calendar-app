@@ -1,6 +1,5 @@
-package com.today.calendarevents
+package com.today.calendarevents.agenda
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +8,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ca.barrenechea.widget.recyclerview.decoration.StickyHeaderAdapter
 import ca.barrenechea.widget.recyclerview.decoration.StickyHeaderDecoration
+import com.today.calendarevents.data.CalendarEvent
+import com.today.calendarevents.R
+import com.today.calendarevents.Utils
 import java.util.*
 
-class EventsAdapter(private val events: List<CalendarEvent>, private val headerIndexes: ArrayList<Long>) :
-    RecyclerView.Adapter<EventsAdapter.EventViewHolder>(), StickyHeaderAdapter<EventsAdapter.HeaderHolder> {
+class AgendaAdapter(private val events: List<CalendarEvent>, private val headerIndexes: ArrayList<Long>) :
+    RecyclerView.Adapter<AgendaAdapter.EventViewHolder>(), StickyHeaderAdapter<AgendaAdapter.HeaderHolder> {
 
     override fun getHeaderId(position: Int): Long {
         return if (position < headerIndexes.size)
@@ -22,13 +24,13 @@ class EventsAdapter(private val events: List<CalendarEvent>, private val headerI
     }
 
     override fun onCreateHeaderViewHolder(parent: ViewGroup): HeaderHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item_header, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.header_list_item, parent, false)
         return HeaderHolder(view)
     }
 
     override fun onBindHeaderViewHolder(headerHolder: HeaderHolder, position: Int) {
         val item = events[position]
-        headerHolder.date.text = DateUtils.getDate(item.startDate, "dd  MMM")
+        headerHolder.date.text = Utils.getDate(item.startDate, "dd  MMM")
     }
 
     private var itemAction: ((CalendarEvent) -> Unit)? = null
@@ -67,23 +69,15 @@ class EventsAdapter(private val events: List<CalendarEvent>, private val headerI
             } else {
                 itemView.context.resources.getString(
                     R.string.time_slot_values,
-                    DateUtils.getDate(event.startDate, "hh:mm"),
-                    DateUtils.getDate(event.endDate, "hh:mm")
+                    Utils.getDate(event.startDate, "hh:mm"),
+                    Utils.getDate(event.endDate, "hh:mm")
                 )
             }
-            calColorView?.setBackgroundColor(getDisplayColor(event.calDisplayColor?.toInt()?:0))
+            calColorView?.setBackgroundColor(Utils.getDisplayColor(event.calDisplayColor))
             itemView.setOnClickListener { itemAction?.invoke(event) }
 
         }
 
-        fun getDisplayColor(color: Int): Int {
-            val fArr = FloatArray(3)
-            Color.colorToHSV(color, fArr)
-            if (fArr[2] > 0.79f) {
-                fArr[1] = Math.min(fArr[1] * 1.3f, 1.0f)
-                fArr[2] = fArr[2] * 0.8f
-            }
-            return Color.HSVToColor(Color.alpha(color), fArr)
-        }
+
     }
 }

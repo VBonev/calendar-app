@@ -1,14 +1,16 @@
-package com.today.calendarevents
+package com.today.calendarevents.agenda
 
 import android.content.ContentResolver
 import android.provider.CalendarContract
 import android.util.Log
 import android.util.SparseArray
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import com.today.calendarevents.BaseViewModel
+import com.today.calendarevents.data.CalendarEvent
+import com.today.calendarevents.data.EventAttendee
+import com.today.calendarevents.Utils
 import io.reactivex.*
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -16,63 +18,35 @@ import io.reactivex.schedulers.Schedulers
 import java.lang.Exception
 
 
-class EventsViewModel(private val contentResolver: ContentResolver) : ViewModel() {
-    private val compositeDisposable = CompositeDisposable()
+class AgendaViewModel(contentResolver: ContentResolver) : BaseViewModel(contentResolver) {
+
+    val calendarEvents: MutableLiveData<List<CalendarEvent>> = MutableLiveData()
 
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.dispose()
     }
 
-    val calendarEvents: MutableLiveData<List<CalendarEvent>> = MutableLiveData()
-
-    //    private fun readCalendars(): SparseArray<String> {
-//        val cursor = contentResolver.query(
-//            CalendarContract.Calendars.CONTENT_URI,
-//            arrayOf(
-//                CalendarContract.Calendars._ID,
-//                CalendarContract.Calendars.CALENDAR_DISPLAY_NAME
-//            ), null, null, null
-//        )
-//
-//        // Get calendars id
-//        val calendars = SparseArray<String>()
-//        cursor?.let {
-//            if (it.count > 0) {
-//                while (it.moveToNext()) {
-//                    calendars.put(it.getInt(0), it.getString(1))
-//                }
-//            }
-//            it.close()
-//        }
-//        return calendars
-//    }
-
-     fun getCalendarEvents() {
-        compositeDisposable += Singles.zip(readEvents(), readCalendars(), readColors()).map { dataPair ->
+    fun getCalendarEvents() {
+        isLoading.postValue(true)
+        compositeDisposable += Singles.zip(readEvents(), readCalendars()).map { dataPair ->
 
             val calEvents = dataPair.first
             val calendars = dataPair.second
-            val colors = dataPair.third
 
             for (event in calEvents) {
                 event.calendarName = calendars[event.calendarId ?: 0]
-                event.calDisplayColor = colors[event.calColorId ?: 0]
+                getAllAttendees(event)
             }
             calEvents
-        }.map {
-
-            for (i in 0 until it.size) {
-                getAllAttendees(it[i])
-            }
-            it
-        }
-            .subscribeOn(Schedulers.io())
+        }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onError = {
+                    isLoading.postValue(false)
                     Log.e("Error", it.message)
                 }, onSuccess = {
+                    isLoading.postValue(false)
                     calendarEvents.postValue(it)
                 }
             )
@@ -90,7 +64,7 @@ class EventsViewModel(private val contentResolver: ContentResolver) : ViewModel(
 
             // Get calendars id
             val calendars = SparseArray<String>()
-            cursor.let {
+            cursor?.let {
                 while (it.moveToNext()) {
                     calendars.put(it.getInt(0), it.getString(1))
                 }
@@ -100,31 +74,7 @@ class EventsViewModel(private val contentResolver: ContentResolver) : ViewModel(
         }
     }
 
-    private fun readColors(): SingleSource<SparseArray<String>> {
-        return Single.create { emitter ->
-            val cursor = contentResolver.query(
-                CalendarContract.Colors.CONTENT_URI,
-                arrayOf(
-                    CalendarContract.Colors.COLOR_KEY,
-                    CalendarContract.Colors.COLOR
-                ), null, null, null
-            )
-
-            // Get calendars id
-            val colors = SparseArray<String>()
-            cursor?.let {
-                if (it.count > 0) {
-                    while (it.moveToNext()) {
-                        colors.put(it.getInt(0), it.getString(1))
-                    }
-                }
-                it.close()
-            }
-            emitter.onSuccess(colors)
-        }
-    }
-
-   private fun readEvents(): SingleSource<ArrayList<CalendarEvent>> {
+    private fun readEvents(): SingleSource<ArrayList<CalendarEvent>> {
         return Single.create { emitter ->
             try {
                 val cursor = contentResolver
@@ -136,7 +86,7 @@ class EventsViewModel(private val contentResolver: ContentResolver) : ViewModel(
                             CalendarContract.Events.DESCRIPTION,
                             CalendarContract.Events.DTSTART,
                             CalendarContract.Events.DTEND,
-                            CalendarContract.Events.CALENDAR_COLOR_KEY,
+                            CalendarContract.Events.CALENDAR_COLOR,
                             CalendarContract.Events.ALL_DAY,
                             CalendarContract.Events.AVAILABILITY,
                             CalendarContract.Events.EVENT_LOCATION,
@@ -152,10 +102,10 @@ class EventsViewModel(private val contentResolver: ContentResolver) : ViewModel(
                         while (cursor.moveToNext()) {
                             val calEvent = CalendarEvent(cursor.getInt(0))
                             calEvent.name = cursor.getString(1)
-                            calEvent.description = cursor.getString(2)
+                            calEvent.notes = cursor.getString(2)
                             calEvent.startDate = cursor.getString(3)?.toLong()
                             calEvent.endDate = cursor.getString(4)?.toLong()
-                            calEvent.calColorId = cursor.getInt(5)
+                            calEvent.calDisplayColor = cursor.getInt(5)
                             calEvent.allDay = cursor.getInt(6) == 1
                             calEvent.busy = (cursor.getInt(7) == CalendarContract.Events.AVAILABILITY_BUSY)
                             calEvent.location = cursor.getString(8)
@@ -223,8 +173,8 @@ class EventsViewModel(private val contentResolver: ContentResolver) : ViewModel(
 
         val headerIndexes = ArrayList<Long>()
         for (i in 0 until events.size - 1) {
-            val dayOfYear = DateUtils.getDayOfYear(events[i].startDate)
-            val dayOfYear1 = DateUtils.getDayOfYear(events[i + 1].startDate)
+            val dayOfYear = Utils.getDayOfYear(events[i].startDate)
+            val dayOfYear1 = Utils.getDayOfYear(events[i + 1].startDate)
             if (dayOfYear != dayOfYear1) {
                 headerIndexes.add(i + 1.toLong())
             } else {

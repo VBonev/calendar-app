@@ -1,9 +1,11 @@
-package com.today.calendarevents
+package com.today.calendarevents.details
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.today.calendarevents.data.EventAttendee
+import com.today.calendarevents.R
 
 class EventAttendeesAdapter(private val attendees: List<EventAttendee>) :
     RecyclerView.Adapter<EventAttendeesAdapter.AttendeeViewHolder>() {
@@ -37,7 +39,7 @@ class EventAttendeesAdapter(private val attendees: List<EventAttendee>) :
                 1 -> "ACCEPTED"
                 2 -> "DECLINED"
                 3 -> "INVITED"
-                else -> ""
+                else -> "NONE"
             }
 
         }

@@ -2,4 +2,19 @@
     <string name="app_name">CalendarEvents</string>
     <string name="time_slot_values">%s - %s</string>
     <string name="all_day_label">ALL DAY</string>
+    <string name="empty_event_name_error">Please insert event name</string>
+    <string name="insert_event_error">There was a problem with inserting a new event</string>
+    <string name="half_an_hour_time_slot">30 minutes</string>
+    <string name="one_hour_time_slot">1 hour</string>
+    <string name="insert_event_title_hint">Insert event title</string>
+    <string name="insert_event_notes_hint">Insert notes</string>
+    <string name="time_slot_label">Your next free time slot is between:</string>
+    <string name="time_slot_current_time">Your current time is:</string>
+    <string name="slot_intervals_label">CHOOSE TIME INTERVAL</string>
+    <string name="attendees_label">Attendees:</string>
+    <string name="notes_label">notes:</string>
+    <string name="location_label">Location:</string>
+    <string name="end_date_label">End Date:</string>
+    <string name="start_date_label">Start date:</string>
+    <string name="calendar_label">Calendar:</string>
 </resources>

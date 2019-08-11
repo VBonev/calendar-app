@@ -16,8 +16,8 @@
             android:padding="10dp"
             android:orientation="vertical">
         <TextView
-                android:text="CHOOSE TIME INTERVAL"
-                android:textColor="@android:color/black"
+                android:text="@string/slot_intervals_label"
+                android:textColor="@color/colorPrimaryDark"
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -27,6 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
     </LinearLayout>
+
     <LinearLayout
             android:layout_width="match_parent"
             android:gravity="center_vertical"
@@ -35,8 +36,29 @@
             android:padding="10dp"
             android:orientation="vertical">
         <TextView
-                android:text="Your free stime slot is between:"
-                android:textColor="@android:color/black"
+                android:text="@string/time_slot_current_time"
+                android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:id="@+id/current_time"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:padding="10dp"
+            android:orientation="vertical">
+        <TextView
+                android:text="@string/time_slot_label"
+                android:textColor="@color/colorPrimaryDark"
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -50,19 +72,19 @@
     </LinearLayout>
 
     <EditText
-            android:hint="Insert event title"
+            android:hint="@string/insert_event_title_hint"
             android:id="@+id/slot_name"
             android:layout_marginBottom="20dp"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorPrimaryDark"
             android:background="@android:color/transparent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     <EditText
-            android:hint="Insert notes"
+            android:hint="@string/insert_event_notes_hint"
             android:id="@+id/slot_notes"
             android:layout_marginBottom="20dp"
             android:background="@android:color/transparent"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorPrimaryDark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
