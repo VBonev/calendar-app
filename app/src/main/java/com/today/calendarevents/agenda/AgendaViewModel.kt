@@ -1,5 +1,6 @@
 package com.today.calendarevents.agenda
 
+import android.app.Application
 import android.content.ContentResolver
 import android.provider.CalendarContract
 import android.util.Log
@@ -7,8 +8,8 @@ import android.util.SparseArray
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.today.calendarevents.Utils
-import com.today.calendarevents.model.CalendarEvent
-import com.today.calendarevents.model.EventAttendee
+import com.today.calendarevents.data.CalendarEvent
+import com.today.calendarevents.data.EventAttendee
 import io.reactivex.Single
 import io.reactivex.SingleOnSubscribe
 import io.reactivex.SingleSource
@@ -23,16 +24,18 @@ import io.reactivex.schedulers.Schedulers
 class AgendaViewModel : ViewModel() {
     private val compositeDisposable = CompositeDisposable()
     val isLoading: MutableLiveData<Boolean> = MutableLiveData()
-    val contentResolver:ContentResolver?=null
+    private val contentResolver: ContentResolver by lazy { Application().applicationContext.contentResolver }
     override fun onCleared() {
         compositeDisposable.clear()
         super.onCleared()
     }
+
     val calendarEvents: MutableLiveData<List<CalendarEvent>> = MutableLiveData()
 
 
     fun getCalendarEvents() {
         isLoading.postValue(true)
+
         compositeDisposable += Singles.zip(readEvents(), readCalendars()).map { dataPair ->
 
             val calEvents = dataPair.first

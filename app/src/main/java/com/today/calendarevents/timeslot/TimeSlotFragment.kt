@@ -11,7 +11,7 @@ import androidx.fragment.app.DialogFragment
 import kotlinx.android.synthetic.main.fragment_time_slot.*
 import java.util.*
 import androidx.lifecycle.Observer
-import com.today.calendarevents.model.CalendarEvent
+import com.today.calendarevents.data.CalendarEvent
 import com.today.calendarevents.R
 import com.today.calendarevents.Utils
 

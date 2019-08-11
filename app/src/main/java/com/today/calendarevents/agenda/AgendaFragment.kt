@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import ca.barrenechea.widget.recyclerview.decoration.StickyHeaderDecoration
 import com.today.calendarevents.R
 import com.today.calendarevents.baseview.BaseFragment
-import com.today.calendarevents.model.CalendarEvent
+import com.today.calendarevents.data.CalendarEvent
 import com.today.calendarevents.databinding.FragmentAgendaBinding
 import com.today.calendarevents.details.EventDetailsFragment
 import com.today.calendarevents.timeslot.TimeSlotFragment

@@ -1,4 +1,4 @@
-package com.today.calendarevents.model
+package com.today.calendarevents.data
 
 import android.os.Parcelable
 import android.provider.CalendarContract
