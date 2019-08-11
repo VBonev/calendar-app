@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+                name="agendaFragmentVM"
+                type="com.today.calendarevents.agenda.AgendaViewModel"/>
+    </data>
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+        <androidx.recyclerview.widget.RecyclerView
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#F7D9D9"
+                android:id="@+id/calendar_events"/>
+
+        <ProgressBar
+                android:id="@+id/progress_circular"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+        />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+</layout>

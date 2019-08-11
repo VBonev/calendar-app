@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.today.calendarevents.R
-import com.today.calendarevents.data.EventAttendee
+import com.today.calendarevents.model.EventAttendee
 
 class EventAttendeesAdapter(private val attendees: List<EventAttendee>) :
     RecyclerView.Adapter<EventAttendeesAdapter.AttendeeViewHolder>() {

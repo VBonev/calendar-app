@@ -6,10 +6,9 @@ import android.util.Log
 import android.util.SparseArray
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.today.calendarevents.BaseViewModel
 import com.today.calendarevents.Utils
-import com.today.calendarevents.data.CalendarEvent
-import com.today.calendarevents.data.EventAttendee
+import com.today.calendarevents.model.CalendarEvent
+import com.today.calendarevents.model.EventAttendee
 import io.reactivex.Single
 import io.reactivex.SingleOnSubscribe
 import io.reactivex.SingleSource

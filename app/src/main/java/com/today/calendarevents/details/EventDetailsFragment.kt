@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.today.calendarevents.data.CalendarEvent
+import com.today.calendarevents.model.CalendarEvent
 import com.today.calendarevents.R
 import com.today.calendarevents.Utils
 import kotlinx.android.synthetic.main.fragment_event_details.*

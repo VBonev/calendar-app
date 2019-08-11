@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/nav_graph"
+            app:startDestination="@id/homeFragment">
+
+
+    <fragment android:id="@+id/homeFragment"
+              android:name="com.today.calendarevents.agenda.AgendaFragment"
+              android:label="HomeFragment"
+              tools:layout="@layout/fragment_agenda">
+        <action android:id="@+id/action_homeFragment_to_placeholder"
+                app:destination="@id/detailsFragment"/>
+    </fragment>
+    <fragment android:id="@+id/detailsFragment"
+              android:label="MovieDetailsFragment"
+              android:name="com.today.calendarevents.details.EventDetailsFragment">
+        <argument android:name="event"
+                  app:argType="com.today.calendarevents.data.CalendarEvent"/>
+    </fragment>
+</navigation>
